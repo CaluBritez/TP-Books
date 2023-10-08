@@ -25,5 +25,9 @@ router.post('/genre',ctrlGenre.createGenre)
 // ----------------- ROUTES BOOK ---------------------------------------------
 // ------------------------------------------------------------------------------------
 router.post('/book',ctrlBook.createBook)
+router.get('/book',ctrlBook.showBooks)
+router.get('/book/:id',ctrlBook.showOneBook)
+router.delete('/book/:id',ctrlBook.deleteBook)
+router.put('/book/:id',ctrlBook.updateBook)
 
 export {router}
