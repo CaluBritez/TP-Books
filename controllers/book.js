@@ -3,15 +3,39 @@ const ctrlBook = {};
 
 //Create Book
 ctrlBook.createBook = async (req, res) => {
-    try {
-        const book = new Book(req.body)
-        await book.save()
-
-        return res.json(book)
-    } catch (error) {
+    try{
+    const {userCreate, title, authorId, genreId, yearPublication} = req.body;
+    ///ojo
+    if (!req.files || (req.files).length === 0) {
+        res.status(400).send("No se adjuntaron archivos.");
+        return;
+      }
+    const file = req.files.archivo;
+    const path = `C:/Users/Lucas/Desktop/Trabajos/TP-Libros/${file.name}`;
+    file.mv(path, (err) => {
+        if (err) {
+            console.log("Error al guardar ruta de imagen")
+            return res.status(500).send(err);
+        }
+    })
+    ///oooooaaaaaa    
+    const book = new Book({
+        userCreate,
+        title,
+        authorId,
+        genreId,
+        yearPublication,
+        imgFront:path
+        })
+    
+    await book.save()
+    return res.json(book)
+    }
+    catch (error) {
         res.status(500).json('Internal server error Book')
     }
-};
+}
+;
 // Show Books
 ctrlBook.showBooks = async (req, res) => {
     try {
