@@ -4,43 +4,51 @@ const ctrlBook = {};
 //Create Book
 ctrlBook.createBook = async (req, res) => {
     try{
-    const {userCreate, title, authorId, genreId, yearPublication} = req.body;
-    ///ojo
-    if (!req.files || (req.files).length === 0) {
-        res.status(400).send("No se adjuntaron archivos.");
-        return;
-      }
-    const file = req.files.archivo;
-    const path = `C:/Users/Lucas/Desktop/Trabajos/TP-Libros/${file.name}`;
-    file.mv(path, (err) => {
-        if (err) {
-            console.log("Error al guardar ruta de imagen")
-            return res.status(500).send(err);
+        const {userCreate, title, authorId, genreId, yearPublication} = req.body;
+        if (!req.files || (req.files).length === 0) {
+            res.status(400).send("No se adjuntaron archivos.");
+            return;
         }
-    })
-    ///oooooaaaaaa    
-    const book = new Book({
-        userCreate,
-        title,
-        authorId,
-        genreId,
-        yearPublication,
-        imgFront:path
+        const file = req.files.archivo;
+        const path = `C:/Users/Lucas/Desktop/Trabajos/TP-Libros/img/${file.name}`;
+        file.mv(path, (err) => {
+            if (err) {
+                console.log("Error al guardar ruta de imagen")
+                return res.status(500).send(err);
+            }
         })
-    
-    await book.save()
-    return res.json(book)
+        const book = new Book({
+            userCreate,
+            title,
+            authorId,
+            genreId,
+            yearPublication,
+            imgFront:path
+            })
+        
+        await book.save()
+        return res.json(book)
     }
     catch (error) {
         res.status(500).json('Internal server error Book')
     }
 }
-;
 // Show Books
+
 ctrlBook.showBooks = async (req, res) => {
     try {
-        const book = await Book.find({});
-        return res.json(book);
+        const books = await Book.find()
+        .populate('authorId','name lastname')
+        .populate('genreId','genre');
+
+        const list = books.map((book) => ({
+            title: book.title,
+            authorId: `${book.authorId.name} ${book.authorId.lastname}`,
+            genreId: book.genreId.genre
+        }))
+
+        return res.status(200).json(list);
+
     } catch (error) {
         console.log('Error al obtener los Libros', error);
         return res.status(500).json({
@@ -48,7 +56,9 @@ ctrlBook.showBooks = async (req, res) => {
         })
     }
 }
+
 // Show one Book
+
 ctrlBook.showOneBook = async (req, res) => {
     try {
         const { id } = req.params;
@@ -62,6 +72,7 @@ ctrlBook.showOneBook = async (req, res) => {
     }
 }
 // Delete Boook
+
 ctrlBook.deleteBook = async (req, res) => {
     try {
         const { id } = req.params;
@@ -75,6 +86,7 @@ ctrlBook.deleteBook = async (req, res) => {
     }
 }
 // Update Book
+
 ctrlBook.updateBook = async (req, res) => {
     const book = req.params.id
     const { title, authorId, genreId, yearPublication, imgFront} = req.body
@@ -89,6 +101,7 @@ ctrlBook.updateBook = async (req, res) => {
     }
   }
 // Show Books for Genre
+
 ctrlBook.showBooksGenre = async (req, res) => {
     try {
         const { id } = req.params;
