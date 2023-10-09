@@ -64,5 +64,21 @@ ctrlBook.updateBook = async (req, res) => {
       res.status(500).json({ message: 'Something goes wrong' })
     }
   }
+// Show Books for Genre
+ctrlBook.showBooksGenre = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const book = await Book.find({genreId:id});
+        const total = book.length
+        return (
+            res.status(200).json({message:'En este genero tenemos '+total+' libros',book})
+                )
+    } catch (error) {
+        console.log('Error al obtener los Libros del genero solicitado', error);
+        return res.status(500).json({
+            message: 'Error al obtener los libros del genero solicitado'
+        })
+    }
+}
 
 export {ctrlBook}

@@ -30,4 +30,7 @@ router.get('/book/:id',ctrlBook.showOneBook)
 router.delete('/book/:id',ctrlBook.deleteBook)
 router.put('/book/:id',ctrlBook.updateBook)
 
+router.get('/bookGenre/:id',ctrlBook.showBooksGenre)
+
+
 export {router}
