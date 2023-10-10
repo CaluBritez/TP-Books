@@ -1,4 +1,5 @@
 import { Book } from "../models/book.js";
+import { Genre } from "../models/genre.js";
 const ctrlBook = {};
 
 //Create Book
@@ -40,7 +41,6 @@ ctrlBook.showBooks = async (req, res) => {
         const books = await Book.find()
         .populate('authorId','name lastname')
         .populate('genreId','genre');
-
         const list = books.map((book) => ({
             title: book.title,
             authorId: `${book.authorId.name} ${book.authorId.lastname}`,
@@ -104,12 +104,32 @@ ctrlBook.updateBook = async (req, res) => {
 
 ctrlBook.showBooksGenre = async (req, res) => {
     try {
-        const { id } = req.params;
-        const book = await Book.find({genreId:id});
-        const total = book.length
+        const generos = await Genre.find();
+        let idsGeneros = [];
+        let nombresGeneros = [];
+        let resultados = []
+        for(var i=0; i< generos.length; i++){
+            idsGeneros.push(generos[i].id);
+            nombresGeneros.push(generos[i].genre)
+            resultados.push(0)
+        }
+        console.log(idsGeneros)
+        console.log(nombresGeneros)
+        const book = await Book.find();
+        
+        for (var i=0; i < book.length; i++){
+
+            for(var r=0; r < idsGeneros.length; r++){
+                if(book[i].genreId == idsGeneros[r]){
+                    resultados[r] = resultados[r] + 1
+                }
+            }
+        }
+        console.log(resultados)
+        
         return (
-            res.status(200).json({message:'En este genero tenemos '+total+' libros',book})
-                )
+            res.status(200).json({message:"Los resultados son los siguientes: "}
+                ))
     } catch (error) {
         console.log('Error al obtener los Libros del genero solicitado', error);
         return res.status(500).json({
@@ -117,5 +137,4 @@ ctrlBook.showBooksGenre = async (req, res) => {
         })
     }
 }
-
 export {ctrlBook}
