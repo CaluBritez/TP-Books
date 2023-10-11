@@ -113,22 +113,26 @@ ctrlBook.showBooksGenre = async (req, res) => {
             nombresGeneros.push(generos[i].genre)
             resultados.push(0)
         }
-        console.log(idsGeneros)
-        console.log(nombresGeneros)
+        
         const book = await Book.find();
         
         for (var i=0; i < book.length; i++){
-
             for(var r=0; r < idsGeneros.length; r++){
                 if(book[i].genreId == idsGeneros[r]){
                     resultados[r] = resultados[r] + 1
                 }
             }
         }
-        console.log(resultados)
+
+        var resultadosPorGenero = {};
+
+        for (var i = 0; i < nombresGeneros.length; i++) {
+            resultadosPorGenero[nombresGeneros[i]] = resultados[i];
+        }
+        
         
         return (
-            res.status(200).json({message:"Los resultados son los siguientes: "}
+            res.status(200).json({resultadosPorGenero}
                 ))
     } catch (error) {
         console.log('Error al obtener los Libros del genero solicitado', error);
